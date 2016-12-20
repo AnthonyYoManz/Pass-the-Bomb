@@ -3,10 +3,12 @@ using System.Collections;
 
 public class Rewind : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
+    private Rewindable m_rewindable;
+
+    // Use this for initialization
+    void Start () {
+        m_rewindable = GetComponent<Rewindable>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -16,7 +18,11 @@ public class Rewind : MonoBehaviour {
     //rewind objects position
     public void RewindPos()
     {
-
+        for (int i = m_rewindable.GetPosListCount() -1 ; i >= 0; i--)
+        {
+            print("index: " + i);
+            transform.position = m_rewindable.GetPos(i);
+        }
     }
 
     //rewind objects rotation
