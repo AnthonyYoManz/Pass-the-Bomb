@@ -41,6 +41,10 @@ public class Record : MonoBehaviour {
             m_rewindable.AddRot(gameObject.transform.rotation);
             m_lastRot = gameObject.transform.rotation;
         }
+        if (m_rewindable.GetRotListCount() > m_rewindable.GetRecordLimit())
+        {
+            m_rewindable.RemoveFirstRotValue();
+        }
     }
 
     //rewind objects material

@@ -18,7 +18,7 @@ public class Rewind : MonoBehaviour {
     //rewind objects position
     public void RewindPos()
     {
-        for (int i = m_rewindable.GetPosListCount() -1 ; i >= 0; i--)
+        for (int i = m_rewindable.GetPosListCount() - 1; i >= 0; i--)
         {
             print("index: " + i);
             transform.position = m_rewindable.GetPos(i);
@@ -28,7 +28,11 @@ public class Rewind : MonoBehaviour {
     //rewind objects rotation
     public void RewindRot()
     {
-
+        for (int i = m_rewindable.GetRotListCount() - 1; i >= 0; i--)
+        {
+            print("index: " + i);
+            transform.rotation = m_rewindable.GetRot(i);
+        }
     }
 
     //rewind objects material

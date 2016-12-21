@@ -80,6 +80,11 @@ public class Rewindable : MonoBehaviour {
         return m_recordedPos[_index];
     }
 
+    public Quaternion GetRot(int _index)
+    {
+        return m_recordedRot[_index];
+    }
+
     public int GetPosListCount()
     {
         return m_recordedPos.Count;
@@ -88,5 +93,15 @@ public class Rewindable : MonoBehaviour {
     public void RemoveFirstPosValue()
     {
         m_recordedPos.RemoveAt(0);
+    }
+
+    public int GetRotListCount()
+    {
+        return m_recordedRot.Count;
+    }
+
+    public void RemoveFirstRotValue()
+    {
+        m_recordedRot.RemoveAt(0);
     }
 }
