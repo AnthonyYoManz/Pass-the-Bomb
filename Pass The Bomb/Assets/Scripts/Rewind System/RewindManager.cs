@@ -9,15 +9,16 @@ public class RewindManager : MonoBehaviour {
     public int m_recordLimit;
     public enum Mode { Rewind, Record, Reset };
     public Mode mode = Mode.Record;
-    private bool m_recordDirtyFlag;
 
     // Use this for initialization
     void Start () {
-        //m_rewindableGameObjects = new List<GameObject>();
-        m_recordDirtyFlag = false;
         foreach (GameObject rewindable in m_rewindableGameObjects)
         {
             rewindable.GetComponent<Rewindable>().SetRecordLimit(m_recordLimit);
+            if (rewindable.GetComponent<LoucasCarMovement>() != null)
+            {
+                rewindable.GetComponent<LoucasCarMovement>().SetRewindManager(gameObject);
+            }
         }
     }
 	
@@ -108,5 +109,15 @@ public class RewindManager : MonoBehaviour {
             rewindable.GetComponent<Rewindable>().ResetData();
         }
         mode = Mode.Record;
+    }
+
+    public void SetMode(Mode _newMode)
+    {
+        mode = _newMode;
+    }
+
+    public Mode GetMode()
+    {
+        return mode;
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class LoucasCarMovement : MonoBehaviour {
 
-    public float moveSpeed = 5.0f;
+    private GameObject m_rewindManager;
     private Rigidbody rb;
 
     public float idealRPM = 500f;
@@ -45,40 +45,58 @@ public class LoucasCarMovement : MonoBehaviour {
 
     void FixedUpdate()
     {
-        float scaledTorque = -Input.GetAxis("Vertical") * torque;
+        //if (m_rewindManager.GetComponent<RewindManager>().GetMode() == RewindManager.Mode.Rewind)
+        //{
+        //    rb.isKinematic = false;
+        //    rb.useGravity = false;
+        //}
+        //if (m_rewindManager.GetComponent<RewindManager>().GetMode() == RewindManager.Mode.Reset)
+        //{
+        //    rb.isKinematic = true;
+        //    rb.useGravity = true;
+        //}
 
-        if (wheelRL.rpm < idealRPM)
-            scaledTorque = Mathf.Lerp(scaledTorque / 10f, scaledTorque, wheelRL.rpm / idealRPM);
-        else
-            scaledTorque = Mathf.Lerp(scaledTorque, 0, (wheelRL.rpm - idealRPM) / (maxRPM - idealRPM));
+        //if (m_rewindManager.GetComponent<RewindManager>().GetMode() == RewindManager.Mode.Record)
+        //{
+            float scaledTorque = -Input.GetAxis("Vertical") * torque;
 
-        DoRollBar(wheelFR, wheelFL);
-        DoRollBar(wheelRR, wheelRL);
+            if (wheelRL.rpm < idealRPM)
+            {
+                scaledTorque = Mathf.Lerp(scaledTorque / 10f, scaledTorque, wheelRL.rpm / idealRPM);
+            }
+            else
+            {
+                scaledTorque = Mathf.Lerp(scaledTorque, 0, (wheelRL.rpm - idealRPM) / (maxRPM - idealRPM));
+            }
 
-        wheelFR.steerAngle = Input.GetAxis("Horizontal") * turnRadius;
-        wheelFL.steerAngle = Input.GetAxis("Horizontal") * turnRadius;
+            DoRollBar(wheelFR, wheelFL);
+            DoRollBar(wheelRR, wheelRL);
 
-        transform.Rotate(0.0f, wheelFL.steerAngle / rotLimit, 0.0f);
+            wheelFR.steerAngle = Input.GetAxis("Horizontal") * turnRadius;
+            wheelFL.steerAngle = Input.GetAxis("Horizontal") * turnRadius;
 
-        wheelFR.motorTorque = driveMode == DriveMode.Rear ? 0 : scaledTorque;
-        wheelFL.motorTorque = driveMode == DriveMode.Rear ? 0 : scaledTorque;
-        wheelRR.motorTorque = driveMode == DriveMode.Front ? 0 : scaledTorque;
-        wheelRL.motorTorque = driveMode == DriveMode.Front ? 0 : scaledTorque;
+            transform.Rotate(0.0f, wheelFL.steerAngle / rotLimit, 0.0f);
 
-        if (Input.GetButton("Fire1"))
-        {
-            wheelFR.brakeTorque = brakeTorque;
-            wheelFL.brakeTorque = brakeTorque;
-            wheelRR.brakeTorque = brakeTorque;
-            wheelRL.brakeTorque = brakeTorque;
-        }
-        else
-        {
-            wheelFR.brakeTorque = 0;
-            wheelFL.brakeTorque = 0;
-            wheelRR.brakeTorque = 0;
-            wheelRL.brakeTorque = 0;
-        }
+            wheelFR.motorTorque = driveMode == DriveMode.Rear ? 0 : scaledTorque;
+            wheelFL.motorTorque = driveMode == DriveMode.Rear ? 0 : scaledTorque;
+            wheelRR.motorTorque = driveMode == DriveMode.Front ? 0 : scaledTorque;
+            wheelRL.motorTorque = driveMode == DriveMode.Front ? 0 : scaledTorque;
+
+            if (Input.GetButton("Fire1"))
+            {
+                wheelFR.brakeTorque = brakeTorque;
+                wheelFL.brakeTorque = brakeTorque;
+                wheelRR.brakeTorque = brakeTorque;
+                wheelRL.brakeTorque = brakeTorque;
+            }
+            else
+            {
+                wheelFR.brakeTorque = 0;
+                wheelFL.brakeTorque = 0;
+                wheelRR.brakeTorque = 0;
+                wheelRL.brakeTorque = 0;
+            }
+        //}
     }
 
     void DoRollBar(WheelCollider WheelL, WheelCollider WheelR)
@@ -89,19 +107,30 @@ public class LoucasCarMovement : MonoBehaviour {
 
         bool groundedL = WheelL.GetGroundHit(out hit);
         if (groundedL)
+        {
             travelL = (-WheelL.transform.InverseTransformPoint(hit.point).y - WheelL.radius) / WheelL.suspensionDistance;
+        }
 
         bool groundedR = WheelR.GetGroundHit(out hit);
         if (groundedR)
+        {
             travelR = (-WheelR.transform.InverseTransformPoint(hit.point).y - WheelR.radius) / WheelR.suspensionDistance;
+        }
 
         float antiRollForce = (travelL - travelR) * AntiRoll;
 
         if (groundedL)
-            rb.AddForceAtPosition(WheelL.transform.up * -antiRollForce,
-                                         WheelL.transform.position);
+        {
+            rb.AddForceAtPosition(WheelL.transform.up * -antiRollForce, WheelL.transform.position);
+        }
         if (groundedR)
-            rb.AddForceAtPosition(WheelR.transform.up * antiRollForce,
-                                         WheelR.transform.position);
+        {
+            rb.AddForceAtPosition(WheelR.transform.up * antiRollForce, WheelR.transform.position);
+        }
+    }
+
+    public void SetRewindManager(GameObject _rewindManager)
+    {
+        m_rewindManager = _rewindManager;
     }
 }

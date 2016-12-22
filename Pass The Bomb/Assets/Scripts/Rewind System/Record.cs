@@ -8,10 +8,12 @@ public class Record : MonoBehaviour {
     private Quaternion m_lastRot;
     private Material m_lastMat;
     private GameObject m_lastBombHolder;
-
+    private float m_timer;
+    [SerializeField] private float m_timeInterval;
 	// Use this for initialization
 	void Start () {
         m_rewindable = GetComponent<Rewindable>();
+        m_timer = 0.0f;
 	}
 	
 	// Update is called once per frame
@@ -22,11 +24,18 @@ public class Record : MonoBehaviour {
     //rewind objects position
     public void RecordPos()
     {
-        if (gameObject.transform.position != m_lastPos)
+        if (m_timer > m_timeInterval)
         {
-            m_rewindable.AddPos(gameObject.transform.position);
-            m_lastPos = gameObject.transform.position;
+            //Do Stuff
+            if (gameObject.transform.position != m_lastPos)
+            {
+                m_rewindable.AddPos(gameObject.transform.position);
+                m_lastPos = gameObject.transform.position;
+            }
+            m_timer = 0;
         }
+        m_timer += Time.deltaTime;
+        
         if (m_rewindable.GetPosListCount() > m_rewindable.GetRecordLimit())
         {
             m_rewindable.RemoveFirstPosValue();
