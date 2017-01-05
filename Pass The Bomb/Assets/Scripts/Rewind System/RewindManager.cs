@@ -9,21 +9,21 @@ public class RewindManager : MonoBehaviour {
     public int m_recordLimit;
     public enum Mode { Rewind, Record, Reset };
     public Mode mode = Mode.Record;
+    private float m_stopwatch;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
+        m_stopwatch = 0;
         foreach (GameObject rewindable in m_rewindableGameObjects)
         {
             rewindable.GetComponent<Rewindable>().SetRecordLimit(m_recordLimit);
-            if (rewindable.GetComponent<LoucasCarMovement>() != null)
-            {
-                rewindable.GetComponent<LoucasCarMovement>().SetRewindManager(gameObject);
-            }
         }
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -33,7 +33,16 @@ public class RewindManager : MonoBehaviour {
         //if rewind true start rewind system
         if (mode == Mode.Rewind)
         {
-            Rewind();
+            m_stopwatch += Time.deltaTime;
+            if (m_stopwatch > m_timeToRewind)
+            {
+                print("Time Up");
+                mode = Mode.Reset;
+            }
+            else
+            {
+                Rewind();
+            }
         }
         else if (mode == Mode.Record)
         {
@@ -43,7 +52,7 @@ public class RewindManager : MonoBehaviour {
         {
             ResetData();
         }
-	}
+    }
 
     void Rewind()
     {
@@ -71,7 +80,6 @@ public class RewindManager : MonoBehaviour {
                 rewindable.GetComponent<Rewind>().RewindBombHolder();
             }
         }
-        mode = Mode.Reset;
     }
 
     void Record()
@@ -104,9 +112,11 @@ public class RewindManager : MonoBehaviour {
 
     void ResetData()
     {
+        m_stopwatch = 0;
         foreach (GameObject rewindable in m_rewindableGameObjects)
         {
             rewindable.GetComponent<Rewindable>().ResetData();
+            rewindable.GetComponent<Rewind>().ResetDirtyFlags();
         }
         mode = Mode.Record;
     }

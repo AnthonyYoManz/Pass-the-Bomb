@@ -3,7 +3,7 @@ using System.Collections;
 
 public class LoucasCarMovement : MonoBehaviour {
 
-    private GameObject m_rewindManager;
+    public GameObject m_rewindManager;
     private Rigidbody rb;
 
     public float idealRPM = 500f;
@@ -45,58 +45,59 @@ public class LoucasCarMovement : MonoBehaviour {
 
     void FixedUpdate()
     {
-        //if (m_rewindManager.GetComponent<RewindManager>().GetMode() == RewindManager.Mode.Rewind)
-        //{
-        //    rb.isKinematic = false;
-        //    rb.useGravity = false;
-        //}
-        //if (m_rewindManager.GetComponent<RewindManager>().GetMode() == RewindManager.Mode.Reset)
-        //{
-        //    rb.isKinematic = true;
-        //    rb.useGravity = true;
-        //}
+        if (m_rewindManager.GetComponent<RewindManager>().GetMode() == RewindManager.Mode.Record)
+        {
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            Movement();
+        }
+        else if (m_rewindManager.GetComponent<RewindManager>().GetMode() == RewindManager.Mode.Rewind)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+        }
+    }
 
-        //if (m_rewindManager.GetComponent<RewindManager>().GetMode() == RewindManager.Mode.Record)
-        //{
-            float scaledTorque = -Input.GetAxis("Vertical") * torque;
+    void Movement()
+    {
+        float scaledTorque = -Input.GetAxis("Vertical") * torque;
 
-            if (wheelRL.rpm < idealRPM)
-            {
-                scaledTorque = Mathf.Lerp(scaledTorque / 10f, scaledTorque, wheelRL.rpm / idealRPM);
-            }
-            else
-            {
-                scaledTorque = Mathf.Lerp(scaledTorque, 0, (wheelRL.rpm - idealRPM) / (maxRPM - idealRPM));
-            }
+        if (wheelRL.rpm < idealRPM)
+        {
+            scaledTorque = Mathf.Lerp(scaledTorque / 10f, scaledTorque, wheelRL.rpm / idealRPM);
+        }
+        else
+        {
+            scaledTorque = Mathf.Lerp(scaledTorque, 0, (wheelRL.rpm - idealRPM) / (maxRPM - idealRPM));
+        }
 
-            DoRollBar(wheelFR, wheelFL);
-            DoRollBar(wheelRR, wheelRL);
+        DoRollBar(wheelFR, wheelFL);
+        DoRollBar(wheelRR, wheelRL);
 
-            wheelFR.steerAngle = Input.GetAxis("Horizontal") * turnRadius;
-            wheelFL.steerAngle = Input.GetAxis("Horizontal") * turnRadius;
+        wheelFR.steerAngle = Input.GetAxis("Horizontal") * turnRadius;
+        wheelFL.steerAngle = Input.GetAxis("Horizontal") * turnRadius;
 
-            transform.Rotate(0.0f, wheelFL.steerAngle / rotLimit, 0.0f);
+        transform.Rotate(0.0f, wheelFL.steerAngle / rotLimit, 0.0f);
 
-            wheelFR.motorTorque = driveMode == DriveMode.Rear ? 0 : scaledTorque;
-            wheelFL.motorTorque = driveMode == DriveMode.Rear ? 0 : scaledTorque;
-            wheelRR.motorTorque = driveMode == DriveMode.Front ? 0 : scaledTorque;
-            wheelRL.motorTorque = driveMode == DriveMode.Front ? 0 : scaledTorque;
+        wheelFR.motorTorque = driveMode == DriveMode.Rear ? 0 : scaledTorque;
+        wheelFL.motorTorque = driveMode == DriveMode.Rear ? 0 : scaledTorque;
+        wheelRR.motorTorque = driveMode == DriveMode.Front ? 0 : scaledTorque;
+        wheelRL.motorTorque = driveMode == DriveMode.Front ? 0 : scaledTorque;
 
-            if (Input.GetButton("Fire1"))
-            {
-                wheelFR.brakeTorque = brakeTorque;
-                wheelFL.brakeTorque = brakeTorque;
-                wheelRR.brakeTorque = brakeTorque;
-                wheelRL.brakeTorque = brakeTorque;
-            }
-            else
-            {
-                wheelFR.brakeTorque = 0;
-                wheelFL.brakeTorque = 0;
-                wheelRR.brakeTorque = 0;
-                wheelRL.brakeTorque = 0;
-            }
-        //}
+        if (Input.GetButton("Fire1"))
+        {
+            wheelFR.brakeTorque = brakeTorque;
+            wheelFL.brakeTorque = brakeTorque;
+            wheelRR.brakeTorque = brakeTorque;
+            wheelRL.brakeTorque = brakeTorque;
+        }
+        else
+        {
+            wheelFR.brakeTorque = 0;
+            wheelFL.brakeTorque = 0;
+            wheelRR.brakeTorque = 0;
+            wheelRL.brakeTorque = 0;
+        }
     }
 
     void DoRollBar(WheelCollider WheelL, WheelCollider WheelR)
