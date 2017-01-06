@@ -27,4 +27,9 @@ public class ParticleSpawner : MonoBehaviour {
             Instantiate(m_particleEffect, m_spawnPoint.position, m_spawnPoint.rotation);
         }
     }
+
+    public  void SpawnParticle()
+    {
+        Instantiate(m_particleEffect, m_spawnPoint.position, m_spawnPoint.rotation);
+    }
 }

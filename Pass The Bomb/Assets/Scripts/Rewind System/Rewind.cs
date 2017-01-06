@@ -6,8 +6,8 @@ public class Rewind : MonoBehaviour {
     private Rewindable m_rewindable;
     [SerializeField]
     private float m_rateOfChange;
-    private int m_counter;
-    private bool m_counterSet;
+    private int m_counter, m_rotCounter;
+    private bool m_counterSet, m_rotCounterSet;
     private bool m_isRewinding;
 
     // Use this for initialization
@@ -15,6 +15,7 @@ public class Rewind : MonoBehaviour {
     {
         m_rewindable = GetComponent<Rewindable>();
         m_counterSet = false;
+        m_rotCounterSet = false;
         m_isRewinding = false;
     }
 
@@ -27,16 +28,11 @@ public class Rewind : MonoBehaviour {
     //rewind objects position
     public void RewindPos()
     {
-        print("rewinding pos");
-        //for (int i = m_rewindable.GetPosListCount() - 1; i >= 0; i--)
-        //{
-        //    print("index: " + i);
-        //    transform.position = m_rewindable.GetPos(i);
-        //}
+        //print("rewinding pos");
 
         if (!m_counterSet)
         {
-            print("setting counter");
+            //print("setting counter");
             m_counter = m_rewindable.GetPosListCount() - 1;
             m_counterSet = true;
         }
@@ -56,11 +52,18 @@ public class Rewind : MonoBehaviour {
     //rewind objects rotation
     public void RewindRot()
     {
-        for (int i = m_rewindable.GetRotListCount() - 1; i >= 0; i--)
+        if (!m_rotCounterSet)
         {
-            //print("index: " + i);
-            transform.rotation = m_rewindable.GetRot(i);
+            print("setting counter");
+            m_rotCounter = m_rewindable.GetRotListCount() - 1;
+            m_rotCounterSet = true;
         }
+        print("Counter: " + m_rotCounter);
+        if (transform.rotation == m_rewindable.GetRot(m_rotCounter) && m_rotCounter > 0)
+        {
+            m_rotCounter--;
+        }
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, m_rewindable.GetRot(m_rotCounter), Time.deltaTime * m_rateOfChange);
     }
 
     //rewind objects material
@@ -78,5 +81,6 @@ public class Rewind : MonoBehaviour {
     public void ResetDirtyFlags()
     {
         m_counterSet = false;
+        m_rotCounterSet = false;
     }
 }
