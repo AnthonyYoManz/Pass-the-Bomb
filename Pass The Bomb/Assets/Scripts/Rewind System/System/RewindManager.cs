@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class RewindManager : MonoBehaviour {
+public class RewindManager : MonoBehaviour
+{
 
     public List<GameObject> m_rewindableGameObjects;
     public float m_timeToRewind;
@@ -10,6 +12,7 @@ public class RewindManager : MonoBehaviour {
     public enum Mode { Rewind, Record, Reset };
     public Mode mode = Mode.Record;
     private float m_stopwatch;
+    public Text m_stateText;
 
     // Use this for initialization
     void Start()
@@ -17,8 +20,11 @@ public class RewindManager : MonoBehaviour {
         m_stopwatch = 0;
         foreach (GameObject rewindable in m_rewindableGameObjects)
         {
+            print("Test 1");
             rewindable.GetComponent<Rewindable>().SetRecordLimit(m_recordLimit);
         }
+        m_stateText.text = "State: Record";
+        m_stateText.color = Color.red;
     }
 
     // Update is called once per frame
@@ -33,6 +39,8 @@ public class RewindManager : MonoBehaviour {
         //if rewind true start rewind system
         if (mode == Mode.Rewind)
         {
+            m_stateText.text = "State: Rewind";
+            m_stateText.color = Color.green;
             m_stopwatch += Time.deltaTime;
             if (m_stopwatch > m_timeToRewind)
             {
@@ -46,10 +54,19 @@ public class RewindManager : MonoBehaviour {
         }
         else if (mode == Mode.Record)
         {
+            foreach (GameObject rewindable in m_rewindableGameObjects)
+            {
+                print("Test 2");
+                rewindable.GetComponent<Rewindable>().SetRecordLimit(m_recordLimit);
+            }
+            m_stateText.text = "State: Record";
+            m_stateText.color = Color.red;
             Record();
         }
         else if (mode == Mode.Reset)
         {
+            m_stateText.text = "State: Reset";
+            m_stateText.color = Color.white;
             ResetData();
         }
     }
@@ -59,26 +76,7 @@ public class RewindManager : MonoBehaviour {
         //loop through each rewindable object and rewind specific traits
         foreach (GameObject rewindable in m_rewindableGameObjects)
         {
-            //if the object wants to rewind their pos then rewind pos
-            if (rewindable.GetComponent<Rewindable>().GetPosBool())
-            {
-                rewindable.GetComponent<Rewind>().RewindPos();
-            }
-            //if the object wants to rewind their rot then rewind rot
-            if (rewindable.GetComponent<Rewindable>().GetRotBool())
-            {
-                rewindable.GetComponent<Rewind>().RewindRot();
-            }
-            //if the object wants to rewind their mat then rewind mat
-            if (rewindable.GetComponent<Rewindable>().GetMatBool())
-            {
-                rewindable.GetComponent<Rewind>().RewindMat();
-            }
-            //if the object wants to rewind the bomb holder then rewind bomb holder
-            if (rewindable.GetComponent<Rewindable>().GetBombHolderBool())
-            {
-                rewindable.GetComponent<Rewind>().RewindBombHolder();
-            }
+            rewindable.GetComponent<Rewind>().RewindData();
         }
     }
 
@@ -87,26 +85,7 @@ public class RewindManager : MonoBehaviour {
         //loop through each rewindable object and rewind specific traits
         foreach (GameObject rewindable in m_rewindableGameObjects)
         {
-            //if the object wants to rewind their pos then rewind pos
-            if (rewindable.GetComponent<Rewindable>().GetPosBool())
-            {
-                rewindable.GetComponent<Record>().RecordPos();
-            }
-            //if the object wants to rewind their rot then rewind rot
-            if (rewindable.GetComponent<Rewindable>().GetRotBool())
-            {
-                rewindable.GetComponent<Record>().RecordRot();
-            }
-            //if the object wants to rewind their mat then rewind mat
-            if (rewindable.GetComponent<Rewindable>().GetMatBool())
-            {
-                rewindable.GetComponent<Record>().RecordMat();
-            }
-            //if the object wants to rewind the bomb holder then rewind bomb holder
-            if (rewindable.GetComponent<Rewindable>().GetBombHolderBool())
-            {
-                rewindable.GetComponent<Record>().RecordBombHolder();
-            }
+            rewindable.GetComponent<Record>().RecordData();
         }
     }
 
