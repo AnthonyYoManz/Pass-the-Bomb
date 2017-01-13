@@ -1,26 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CarCollisions : MonoBehaviour {
+public class CarCollisions : MonoBehaviour
+{
+    private GameObject m_BombSystemObject;
+    private Bomb_System m_BombSystem;
 
-    public Bomb_System m_BombSystem;
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-    void OnTriggerEnter(Collision other)
+   void Start()
     {
-        if (m_BombSystem.m_BS == BombState.BS_NULL)
-        {
-            m_BS = BombState.BS_SPAWN;
-        }
-        m_SPNum++;
+        m_BombSystemObject = GameObject.FindGameObjectWithTag("BombSystem");
+        m_BombSystem = m_BombSystemObject.GetComponent<Bomb_System>();
+    }
+    void OnTriggerEnter(Collider car)
+    {
+
+        m_BombSystem.SetSpawnNum();
+        
     }
 }

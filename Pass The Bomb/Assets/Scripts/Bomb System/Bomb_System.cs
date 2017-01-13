@@ -4,70 +4,53 @@ using System.Collections.Generic;
 
 public class Bomb_System : MonoBehaviour
 {
-    public enum BombState
-    {
-        BS_NULL = 0,
-        BS_SPAWN,
-        BS_LIVE,
-        BS_DESTROY
-    };
+  
 
     public GameObject m_Bomb;
-    public List<Vector3> m_Spawn;
+    public List<GameObject> m_SpawnPoints;
 
-    private bool m_Drop = false;
-    private BombState m_BS;
+    public bool m_SpawnBomb = false; //
+    
+    public int m_SPNum;
 
-    private int m_SPNum;
-
-    // Use this for initialization
+   
     void Start()
     {
         m_SPNum = 0;
-        m_Drop = true;
+        m_SpawnBomb = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        switch(m_BS)
+      
+        if (m_SpawnBomb)
         {
-            case BombState.BS_NULL:
-                break;
-            case BombState.BS_SPAWN: Instantiate(m_Bomb, m_Spawn[m_SPNum], Quaternion.identity);
-                break;
-            case BombState.BS_LIVE:
-                break;
-            case BombState.BS_DESTROY:
-                break;
-         
+            
+            m_SpawnBomb = false;
+            BombSpawn();
+        }
+        if(m_SPNum >= m_SpawnPoints.Count)
+        {
+            m_SPNum = 0;
         }
 
-        /* if (m_BS == BombState.BS_SPAWN)
-         {
-             m_Drop = false;
-           //  Instantiate(m_Bomb, ); // drop an instance of the bomb infront 
-         }*/
-      //  Debug();
+    }
+    void BombSpawn()
+    {
+        Instantiate(m_Bomb, m_SpawnPoints[m_SPNum].transform.position, Quaternion.identity);
     }
 
-    void OnTriggerEnter(Collider other)
+    public void SetBombSpawn(bool _set)
     {
-        print("collision");
-        print(m_SPNum);
-        if (m_BS == BombState.BS_NULL)
-        {
-            m_BS = BombState.BS_SPAWN;
-        }
+        m_SpawnBomb = _set;
+    }
+
+    public void SetSpawnNum()
+    {
         m_SPNum++;
     }
 
-    enum GetBombState()
-
-    void Debug()
-    {
-
-    }
 }
 
 
