@@ -4,12 +4,15 @@ using System.Collections.Generic;
 
 public class PowerUpSpawner : MonoBehaviour {
 
-    public Transform[] m_spawnPoint;
     public GameObject m_powerUp;
-    public List<GameObject> m_SpawnedPowerUps;
+    private List<Transform> m_spawnPoints;
+    private Transform[] m_children;
 
 	// Use this for initialization
 	void Start () {
+        
+        
+        SetUpSpawnPoints();
         SpawnPowerUps();
 	}
 	
@@ -18,11 +21,21 @@ public class PowerUpSpawner : MonoBehaviour {
 	
 	}
 
+    void SetUpSpawnPoints()
+    {
+        m_spawnPoints = new List<Transform>();
+        for (int i = 0; i < gameObject.transform.childCount; i++)
+        {
+            m_spawnPoints.Add(gameObject.transform.GetChild(i).transform);
+        }
+    }
+
     void SpawnPowerUps()
     {
-        for (int i = 0; i < m_spawnPoint.Length; i++)
+        GameObject m_tempGameObjects = (GameObject)Instantiate(m_powerUp, gameObject.transform.position, gameObject.transform.rotation);
+        for (int i = 0; i < m_spawnPoints.Count; i++)
         {
-            GameObject m_tempGameObjects = (GameObject)Instantiate(m_powerUp, m_spawnPoint[i].transform.position, m_spawnPoint[i].transform.rotation);
+            Instantiate(m_powerUp, m_spawnPoints[i].transform.position, m_spawnPoints[i].transform.rotation);
         }
     }
 }

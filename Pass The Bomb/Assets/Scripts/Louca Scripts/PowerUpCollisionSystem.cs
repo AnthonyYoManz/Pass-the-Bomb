@@ -3,16 +3,14 @@ using System.Collections;
 
 public class PowerUpCollisionSystem : MonoBehaviour {
 
-    private AudioSource m_audioSource;
     private ParticleSpawner m_particleSpawner;
-    public AudioClip m_audioClip;
-    public Camera m_camera;
+
+    public GameObject m_audioObjectOne, m_audioObjectTwo;
+    public int m_max, m_num;
 
 	// Use this for initialization
 	void Start () {
-        m_audioSource = gameObject.GetComponent<AudioSource>();
         m_particleSpawner = gameObject.GetComponent<ParticleSpawner>();
-        m_audioSource.clip = m_audioClip;
 	}
 	
 	// Update is called once per frame
@@ -20,18 +18,22 @@ public class PowerUpCollisionSystem : MonoBehaviour {
 	
 	}
 
-    void OnCollisionEnter(Collision other)
+    void OnTriggerEnter(Collider other)
     {
-        if (other.collider.tag == "Player")
+        if (other.tag == "Player")
         {
             m_particleSpawner.SpawnParticle();
-            gameObject.transform.position = m_camera.transform.position;
-            PlayAudio();
+            int rand = (int)Random.Range(0, m_max);
+            if (rand < m_num)
+            {
+                Instantiate(m_audioObjectOne, transform.position, Quaternion.identity);
+            }
+            else
+            {
+                Instantiate(m_audioObjectTwo, transform.position, Quaternion.identity);
+            }
+            Destroy(gameObject);
         }
     }
 
-    void PlayAudio()
-    {
-        m_audioSource.Play();
-    }
 }
