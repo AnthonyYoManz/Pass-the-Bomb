@@ -16,7 +16,10 @@ public class ArcadeCarScript : MonoBehaviour
     private bool m_offGround;
 
     private bool m_speedBoostActive;
-    [SerializeField] float m_timer, m_timeInterval;
+    [SerializeField] float m_multiplier, m_timeInterval;
+    private float m_timer;
+    private GameObject m_rewindManager;
+    private RewindManager m_rewindManagerScript;
 
     public Transform[] m_wheels = new Transform[4];
     private int m_wheelCount;
@@ -35,6 +38,8 @@ public class ArcadeCarScript : MonoBehaviour
         m_wheelsOnGround = 0;
         m_wheelCount = m_wheels.Length;
         m_speedBoostActive = false;
+        m_rewindManager = GameObject.FindGameObjectWithTag("RewindManager");
+        m_rewindManagerScript = m_rewindManager.GetComponent<RewindManager>();
 	}
 
     void Update()
@@ -54,20 +59,30 @@ public class ArcadeCarScript : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate ()
     {
-        IsInAir();
-        ApplyFriction();
-        if (m_offGround && m_wheelsOnGround != 0)
+        if (m_rewindManagerScript.GetMode() == RewindManager.Mode.Record)
         {
-            ManeuverOffGround();
+            m_rb.isKinematic = false;
+            m_rb.useGravity = true;
+            IsInAir();
+            ApplyFriction();
+            if (m_offGround && m_wheelsOnGround != 0)
+            {
+                ManeuverOffGround();
+            }
+            else if (m_wheelsOnGround == m_wheelCount)
+            {
+                Accelerate();
+                TurnWheels();
+                m_lastGroundedDir = transform.forward;
+            }
+            Vector3 newPosition = transform.position + m_controlledVelocity * Time.fixedDeltaTime * m_lastGroundedDir;
+            m_rb.MovePosition(newPosition);
         }
-        else if(m_wheelsOnGround == m_wheelCount)
+        if (m_rewindManagerScript.GetMode() == RewindManager.Mode.Rewind)
         {
-            Accelerate();
-            TurnWheels();
-            m_lastGroundedDir = transform.forward;
+            m_rb.isKinematic = true;
+            m_rb.useGravity = false;
         }
-        Vector3 newPosition = transform.position + m_controlledVelocity * Time.fixedDeltaTime * m_lastGroundedDir;
-        m_rb.MovePosition(newPosition);
     }
 
     void IsInAir()
@@ -135,8 +150,8 @@ public class ArcadeCarScript : MonoBehaviour
         {
             float origAccel = m_acceleration;
             float origMaxSpeed = m_maxSpeed;
-            float newAccel = origAccel * 2.0f;
-            float newMaxSpeed = origMaxSpeed * 2.0f;
+            float newAccel = origAccel * m_multiplier;
+            float newMaxSpeed = origMaxSpeed * m_multiplier;
             print("new accel: " + newAccel + " new max speed: " + newMaxSpeed);
             float thrustInput = Input.GetAxis("Vertical");
             m_controlledVelocity += thrustInput * newAccel * Time.fixedDeltaTime;
