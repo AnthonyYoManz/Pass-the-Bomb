@@ -14,6 +14,8 @@ public class BombScript : MonoBehaviour
     private ParticleSpawner m_ParticleSpawner ;
     private ParticleKiller m_ParticleKiller;
     private GameObject m_ParticlespawnerObject ;
+
+    private GameObject m_Player;
     //Score
     //private  ;
     //private  ;
@@ -29,12 +31,15 @@ public class BombScript : MonoBehaviour
 
     public Vector3 tempPos;
 
+
     void Start()
     {
         m_bombSystemObject = GameObject.FindGameObjectWithTag("BombSystem");
         m_BombSystem =  m_bombSystemObject.GetComponent<Bomb_System>();
-       /* m_ExpPhysicObject = GameObject.FindGameObjectWithTag("ExplosionsPhysics");
-        m_ExpPhysic = m_ExpPhysicObject.GetComponent<ExplosionPhysics>();*/
+        /* m_ExpPhysicObject = GameObject.FindGameObjectWithTag("ExplosionsPhysics");
+         m_ExpPhysic = m_ExpPhysicObject.GetComponent<ExplosionPhysics>();*/
+
+        m_Player = GameObject.FindGameObjectWithTag("Player");
 
         m_ParticleSpawner = GetComponent<ParticleSpawner>();
         m_ExpPhy = GetComponent<ExplosionPhysics>();
@@ -63,7 +68,7 @@ public class BombScript : MonoBehaviour
         {
             m_initCol = true;
             tempPos = other.gameObject.transform.position;
-            print(tempPos);
+            
             gameObject.transform.position = new Vector3(tempPos.x, tempPos.y + m_val, tempPos.z);
             gameObject.transform.parent = other.gameObject.transform;
         }
@@ -75,14 +80,18 @@ public class BombScript : MonoBehaviour
         m_Timer += Time.deltaTime;
         if (m_Timer > m_TimeLimit)
         {
-
-            gameObject.transform.position = new Vector3(tempPos.x, tempPos.y - m_val, tempPos.z);
+            //put the bomb location under the car before trigger 
+            gameObject.transform.position = new Vector3 (m_Player.transform.position.x,m_Player.transform.position.y - m_val, m_Player.transform.position.z);
+            //triggers the explosion physics
             m_ExpPhy.trigger();
-            //spawn particle
+           //destroys the bomb
             Destroy(gameObject);
             m_initCol = false;
-            m_BombSystem.SetBombSpawn(true);
+            //particles for explosion
             m_ParticleSpawner.SpawnParticle();
+            //spawns in ner bomb
+            m_BombSystem.SetBombSpawn(true);
+           
 
            
             

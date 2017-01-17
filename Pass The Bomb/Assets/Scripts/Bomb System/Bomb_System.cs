@@ -48,6 +48,7 @@ public class Bomb_System : MonoBehaviour
 
     public void SetSpawnNum()
     {
+        print(m_SPNum);
         m_SPNum++;
     }
 
