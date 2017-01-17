@@ -6,6 +6,10 @@ public class BombScript : MonoBehaviour
     //bomb System
     private Bomb_System m_BombSystem;
     private GameObject m_bombSystemObject;
+
+    private ExplosionPhysics m_ExpPhy;
+   /* private ExplosionPhysics m_ExpPhysic;
+    private GameObject m_ExpPhysicObject;*/
     //Particale
     private ParticleSpawner m_ParticleSpawner ;
     private ParticleKiller m_ParticleKiller;
@@ -27,8 +31,11 @@ public class BombScript : MonoBehaviour
     {
         m_bombSystemObject = GameObject.FindGameObjectWithTag("BombSystem");
         m_BombSystem =  m_bombSystemObject.GetComponent<Bomb_System>();
+       /* m_ExpPhysicObject = GameObject.FindGameObjectWithTag("ExplosionsPhysics");
+        m_ExpPhysic = m_ExpPhysicObject.GetComponent<ExplosionPhysics>();*/
 
         m_ParticleSpawner = GetComponent<ParticleSpawner>();
+        m_ExpPhy = GetComponent<ExplosionPhysics>();
        
 
 
@@ -54,7 +61,7 @@ public class BombScript : MonoBehaviour
         {
             m_initCol = true;
             Vector3 tempPos = other.gameObject.transform.position;
-            print(tempPos.y);
+            print(tempPos);
             gameObject.transform.position = new Vector3(tempPos.x, tempPos.y + m_val, tempPos.z);
             gameObject.transform.parent = other.gameObject.transform;
         }
@@ -72,6 +79,8 @@ public class BombScript : MonoBehaviour
             m_initCol = false;
             m_BombSystem.SetBombSpawn(true);
             m_ParticleSpawner.SpawnParticle();
+
+            m_ExpPhy.trigger();
             
             
         }
