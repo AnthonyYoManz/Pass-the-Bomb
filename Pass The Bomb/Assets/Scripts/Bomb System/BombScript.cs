@@ -27,6 +27,8 @@ public class BombScript : MonoBehaviour
     public float m_Timer;
     public float m_TimeLimit;
 
+    public Vector3 tempPos;
+
     void Start()
     {
         m_bombSystemObject = GameObject.FindGameObjectWithTag("BombSystem");
@@ -60,7 +62,7 @@ public class BombScript : MonoBehaviour
         if((other.tag == "Player")&&(m_initCol == false))
         {
             m_initCol = true;
-            Vector3 tempPos = other.gameObject.transform.position;
+            tempPos = other.gameObject.transform.position;
             print(tempPos);
             gameObject.transform.position = new Vector3(tempPos.x, tempPos.y + m_val, tempPos.z);
             gameObject.transform.parent = other.gameObject.transform;
@@ -73,14 +75,16 @@ public class BombScript : MonoBehaviour
         m_Timer += Time.deltaTime;
         if (m_Timer > m_TimeLimit)
         {
-            
+
+            gameObject.transform.position = new Vector3(tempPos.x, tempPos.y - m_val, tempPos.z);
+            m_ExpPhy.trigger();
             //spawn particle
             Destroy(gameObject);
             m_initCol = false;
             m_BombSystem.SetBombSpawn(true);
             m_ParticleSpawner.SpawnParticle();
 
-            m_ExpPhy.trigger();
+           
             
             
         }
