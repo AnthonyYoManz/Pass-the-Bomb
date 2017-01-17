@@ -15,6 +15,9 @@ public class ArcadeCarScript : MonoBehaviour
     public float m_controlledVelocity;
     private bool m_offGround;
 
+    private bool m_speedBoostActive;
+    [SerializeField] float m_timer, m_timeInterval;
+
     public Transform[] m_wheels = new Transform[4];
     private int m_wheelCount;
     private int m_wheelsOnGround;
@@ -31,7 +34,22 @@ public class ArcadeCarScript : MonoBehaviour
         m_offGround = false;
         m_wheelsOnGround = 0;
         m_wheelCount = m_wheels.Length;
+        m_speedBoostActive = false;
 	}
+
+    void Update()
+    {
+        if (m_speedBoostActive)
+        {
+            if (m_timer > m_timeInterval)
+            {
+                m_timer = 0.0f;
+                m_speedBoostActive = false;
+                print("speed boost finished");
+            }
+            m_timer += Time.deltaTime;
+        }
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate ()
@@ -66,7 +84,7 @@ public class ArcadeCarScript : MonoBehaviour
                 {
                     m_offGround = false;
                     m_wheelsOnGround += 1;
-                    Debug.Log(col.transform.gameObject.name);
+                    //Debug.Log(col.transform.gameObject.name);
                     break;
                 }
             }
@@ -113,15 +131,36 @@ public class ArcadeCarScript : MonoBehaviour
 
     void Accelerate()
     {
-        float thrustInput = Input.GetAxis("Vertical");
-        m_controlledVelocity += thrustInput * m_acceleration * Time.fixedDeltaTime;
-        if (m_controlledVelocity > m_maxSpeed)
+        if (m_speedBoostActive)
         {
-            m_controlledVelocity = m_maxSpeed;
+            float origAccel = m_acceleration;
+            float origMaxSpeed = m_maxSpeed;
+            float newAccel = origAccel * 2.0f;
+            float newMaxSpeed = origMaxSpeed * 2.0f;
+            print("new accel: " + newAccel + " new max speed: " + newMaxSpeed);
+            float thrustInput = Input.GetAxis("Vertical");
+            m_controlledVelocity += thrustInput * newAccel * Time.fixedDeltaTime;
+            if (m_controlledVelocity > newMaxSpeed)
+            {
+                m_controlledVelocity = newMaxSpeed;
+            }
+            if (m_controlledVelocity < -newMaxSpeed)
+            {
+                m_controlledVelocity = -newMaxSpeed;
+            }
         }
-        if (m_controlledVelocity < -m_maxSpeed)
+        else
         {
-            m_controlledVelocity = -m_maxSpeed;
+            float thrustInput = Input.GetAxis("Vertical");
+            m_controlledVelocity += thrustInput * m_acceleration * Time.fixedDeltaTime;
+            if (m_controlledVelocity > m_maxSpeed)
+            {
+                m_controlledVelocity = m_maxSpeed;
+            }
+            if (m_controlledVelocity < -m_maxSpeed)
+            {
+                m_controlledVelocity = -m_maxSpeed;
+            }
         }
     }
 
@@ -139,5 +178,10 @@ public class ArcadeCarScript : MonoBehaviour
             qRot.eulerAngles = rotation;
             m_rb.MoveRotation(qRot);
         }
+    }
+
+    public void SpeedBoost(bool _isActive)
+    {
+        m_speedBoostActive = _isActive;
     }
 }

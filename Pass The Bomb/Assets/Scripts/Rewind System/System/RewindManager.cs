@@ -56,7 +56,7 @@ public class RewindManager : MonoBehaviour
         {
             foreach (GameObject rewindable in m_rewindableGameObjects)
             {
-                print("Test 2");
+                //print("Test 2");
                 rewindable.GetComponent<Rewindable>().SetRecordLimit(m_recordLimit);
             }
             m_stateText.text = "State: Record";

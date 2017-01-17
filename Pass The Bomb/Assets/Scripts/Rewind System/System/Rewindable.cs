@@ -66,20 +66,20 @@ public class Rewindable : MonoBehaviour
     // Pass the record limit to all the attached components
     void PassRecordLimit(int _recordLimit)
     {
-        print("Test 3");
+        //print("Test 3");
         if (m_rewindMat)
         {
-            print("Test 4");
+            //print("Test 4");
             m_matComp.SetRecordLimit(_recordLimit);
         }
         if (m_rewindRot)
         {
-            print("Test 5");
+            //print("Test 5");
             m_rotComp.SetRecordLimit(_recordLimit);
         }
         if (m_rewindPos)
         {
-            print("Test 6");
+            //print("Test 6");
             m_posComp.SetRecordLimit(_recordLimit);
         }
     }
