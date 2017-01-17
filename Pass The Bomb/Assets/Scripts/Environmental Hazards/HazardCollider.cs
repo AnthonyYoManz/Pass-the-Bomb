@@ -4,7 +4,7 @@ using System.Collections;
 public class HazardCollider : MonoBehaviour {
 
     private ParticleSpawner m_particleSpawner;
-    public Camera m_camera;
+    public string m_type;
 
     // Use this for initialization
     void Start()
@@ -18,17 +18,34 @@ public class HazardCollider : MonoBehaviour {
 
     }
 
-    void OnCollisionEnter(Collision other)
+    void OnTriggerEnter(Collider other)
     {
-        if (other.collider.tag == "Player")
+        if (other.tag == "Player")
         {
+            if (m_type == "Boulder")
+            {
+                other.GetComponent<Boulders>().Trigger(true);
+                print("boulders triggered");
+            }
+            //if (m_type == "Snare")
+            //{
+            //other.GetComponent<Snare>().Trigger(true);
+            //print("snare triggered");
+            //}
+            //if (m_type == "Blockade")
+            //{
+            //other.GetComponent<Blockades>().Trigger(true);
+            //print("blockades triggered");
+            //}
+            //if (m_type == "Barrel")
+            //{
+            //other.GetComponent<Barrels>().Trigger(true);
+            //print("barrels triggered");
+            //}
+
             m_particleSpawner.SpawnParticle();
-            gameObject.transform.position = m_camera.transform.position;
+            Destroy(gameObject);
+
         }
     }
-
-    //void PlayAudio()
-    //{
-    //    m_audioSource.Play();
-    //}
 }
