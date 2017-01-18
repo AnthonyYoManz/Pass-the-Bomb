@@ -25,6 +25,8 @@ public class BombScript : MonoBehaviour
     private bool m_initCol;
 
     public float m_val;
+    [SerializeField]
+    private float m_lowerVal, m_forwardVal;
 
     public float m_Timer;
     public float m_TimeLimit;
@@ -38,8 +40,6 @@ public class BombScript : MonoBehaviour
         m_BombSystem =  m_bombSystemObject.GetComponent<Bomb_System>();
         /* m_ExpPhysicObject = GameObject.FindGameObjectWithTag("ExplosionsPhysics");
          m_ExpPhysic = m_ExpPhysicObject.GetComponent<ExplosionPhysics>();*/
-
-        m_Player = GameObject.FindGameObjectWithTag("Player");
 
         m_ParticleSpawner = GetComponent<ParticleSpawner>();
         m_ExpPhy = GetComponent<ExplosionPhysics>();
@@ -71,6 +71,7 @@ public class BombScript : MonoBehaviour
             
             gameObject.transform.position = new Vector3(tempPos.x, tempPos.y + m_val, tempPos.z);
             gameObject.transform.parent = other.gameObject.transform;
+            m_Player = gameObject.transform.parent.gameObject;
         }
     }
 
@@ -81,7 +82,7 @@ public class BombScript : MonoBehaviour
         if (m_Timer > m_TimeLimit)
         {
             //put the bomb location under the car before trigger 
-            gameObject.transform.position = new Vector3 (m_Player.transform.position.x,m_Player.transform.position.y - m_val, m_Player.transform.position.z);
+            gameObject.transform.position = new Vector3 (m_Player.transform.position.x, m_Player.transform.position.y - m_lowerVal, m_Player.transform.position.z + m_forwardVal);
             //triggers the explosion physics
             m_ExpPhy.trigger();
            //destroys the bomb
