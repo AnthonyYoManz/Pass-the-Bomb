@@ -11,7 +11,8 @@ public class ArcadeCarScript : MonoBehaviour
     public float m_maxWheelAngle = 35.0f;
     public float m_twistSpeed = 35.0f;
     public float m_flipSpeed = 35.0f;
-
+    public float m_emergencyTorqueForce = 30.0f;
+    public float m_emergencyJumpForce = 30.0f;
     public float m_controlledVelocity;
     private bool m_offGround;
 
@@ -22,8 +23,11 @@ public class ArcadeCarScript : MonoBehaviour
     private RewindManager m_rewindManagerScript;
 
     public Transform[] m_wheels = new Transform[4];
+    public float m_wheelRayLength = 1.0f;
+    public float m_upperRayLength = 1.0f;
     private int m_wheelCount;
     private int m_wheelsOnGround;
+    private bool m_upsideDown;
 
     private Vector3 m_lastGroundedDir;
 
@@ -65,11 +69,16 @@ public class ArcadeCarScript : MonoBehaviour
             m_rb.useGravity = true;
             IsInAir();
             ApplyFriction();
-            if (m_offGround && m_wheelsOnGround != 0)
+            
+            if (m_offGround && m_wheelsOnGround == 0)
             {
                 ManeuverOffGround();
+                if (m_upsideDown)
+                {
+                    AllowFlip();
+                }
             }
-            else if (m_wheelsOnGround == m_wheelCount)
+            else
             {
                 Accelerate();
                 TurnWheels();
@@ -88,34 +97,51 @@ public class ArcadeCarScript : MonoBehaviour
     void IsInAir()
     {
         m_offGround = true;
+        m_upsideDown = false;
         m_wheelsOnGround = 0;
-        foreach(Transform t in m_wheels)
-        {
-            RaycastHit[] results;
-            results = Physics.RaycastAll(t.position, -transform.up, 1.1f);
-            foreach(RaycastHit col in results)
+        RaycastHit[] results;
+        foreach (Transform t in m_wheels)
+        {   
+            results = Physics.RaycastAll(t.position, -transform.up, m_wheelRayLength);
+            Debug.DrawLine(t.position, t.position - transform.up * m_wheelRayLength, Color.green);
+            foreach (RaycastHit col in results)
             {
-                if (col.transform.gameObject.tag != "wheel")
+                if (col.transform.gameObject.tag != "Player")
                 {
                     m_offGround = false;
                     m_wheelsOnGround += 1;
-                    //Debug.Log(col.transform.gameObject.name);
                     break;
                 }
             }
         }
+        results = Physics.RaycastAll(transform.position, transform.up, m_upperRayLength);
+        Debug.DrawLine(transform.position, transform.position + transform.up * m_upperRayLength, Color.green);
+        foreach (RaycastHit col in results)
+        {
+            if(m_offGround && col.transform.gameObject.tag != "Player")
+            {
+                m_upsideDown = true;
+            }
+        }
+    }
+
+    void AllowFlip()
+    {
+        if(Input.GetButton("Jump"))
+        {
+            m_rb.velocity  = (new Vector3(0, m_emergencyJumpForce, 0));
+            m_rb.AddTorque(transform.right * m_emergencyTorqueForce);
+        }
     }
 
     void ManeuverOffGround()
-    {
+    { 
         float twist = Input.GetAxis("Horizontal") * m_twistSpeed;
         float flip = Input.GetAxis("Vertical") * m_flipSpeed;
-        Quaternion rot = m_rb.rotation;
-        Vector3 eRot = rot.eulerAngles;
-        eRot.x += flip * Time.fixedDeltaTime;
-        eRot.z -= twist * Time.fixedDeltaTime;
-        rot.eulerAngles = eRot;
+        Quaternion rot = Quaternion.Euler(flip * Time.fixedDeltaTime, 0, twist * Time.fixedDeltaTime) * m_rb.rotation;
         m_rb.MoveRotation(rot);
+        //m_rb.AddTorque(transform.right * flip);
+        //m_rb.AddTorque(transform.forward * twist);
     }
 
     void ApplyFriction()
@@ -125,7 +151,7 @@ public class ArcadeCarScript : MonoBehaviour
         {
             friction = m_breakFriction;
         }
-        if(m_offGround)
+        if(m_offGround && !m_upsideDown)
         {
             friction = m_airResistance;
         }
@@ -146,36 +172,25 @@ public class ArcadeCarScript : MonoBehaviour
 
     void Accelerate()
     {
+        float acc = m_acceleration;
+        float maxSpeed = m_maxSpeed;
         if (m_speedBoostActive)
         {
             float origAccel = m_acceleration;
             float origMaxSpeed = m_maxSpeed;
-            float newAccel = origAccel * m_multiplier;
-            float newMaxSpeed = origMaxSpeed * m_multiplier;
-            print("new accel: " + newAccel + " new max speed: " + newMaxSpeed);
-            float thrustInput = Input.GetAxis("Vertical");
-            m_controlledVelocity += thrustInput * newAccel * Time.fixedDeltaTime;
-            if (m_controlledVelocity > newMaxSpeed)
-            {
-                m_controlledVelocity = newMaxSpeed;
-            }
-            if (m_controlledVelocity < -newMaxSpeed)
-            {
-                m_controlledVelocity = -newMaxSpeed;
-            }
+            acc = origAccel * m_multiplier;
+            maxSpeed = origMaxSpeed * m_multiplier;
+            print("new accel: " + acc + " new max speed: " + maxSpeed);
         }
-        else
+        float thrustInput = Input.GetAxis("Vertical");
+        m_controlledVelocity += thrustInput * acc * Time.fixedDeltaTime;
+        if (m_controlledVelocity > maxSpeed)
         {
-            float thrustInput = Input.GetAxis("Vertical");
-            m_controlledVelocity += thrustInput * m_acceleration * Time.fixedDeltaTime;
-            if (m_controlledVelocity > m_maxSpeed)
-            {
-                m_controlledVelocity = m_maxSpeed;
-            }
-            if (m_controlledVelocity < -m_maxSpeed)
-            {
-                m_controlledVelocity = -m_maxSpeed;
-            }
+            m_controlledVelocity = maxSpeed;
+        }
+        if (m_controlledVelocity < -maxSpeed)
+        {
+            m_controlledVelocity = -maxSpeed;
         }
     }
 
