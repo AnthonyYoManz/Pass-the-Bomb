@@ -30,6 +30,7 @@ public class ArcadeCarScript : MonoBehaviour
     private bool m_upsideDown;
 
     private Vector3 m_lastGroundedDir;
+    public int playerID;
 
     private Rigidbody m_rb;
     private float m_wheelAngle;
@@ -182,7 +183,7 @@ public class ArcadeCarScript : MonoBehaviour
             maxSpeed = origMaxSpeed * m_multiplier;
             print("new accel: " + acc + " new max speed: " + maxSpeed);
         }
-        float thrustInput = Input.GetAxis("Vertical");
+        float thrustInput = Input.GetAxis("Vertical" + playerID);
         m_controlledVelocity += thrustInput * acc * Time.fixedDeltaTime;
         if (m_controlledVelocity > maxSpeed)
         {
@@ -196,7 +197,7 @@ public class ArcadeCarScript : MonoBehaviour
 
     void TurnWheels()
     {
-        m_wheelAngle = Input.GetAxis("Horizontal") * m_maxWheelAngle;
+        m_wheelAngle = Input.GetAxis("Horizontal"+playerID) * m_maxWheelAngle;
         if (m_controlledVelocity != 0.0f)
         {
             Vector3 rotation = m_rb.rotation.eulerAngles;

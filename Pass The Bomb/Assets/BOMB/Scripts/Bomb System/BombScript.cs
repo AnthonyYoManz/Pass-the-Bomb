@@ -8,9 +8,6 @@ public class BombScript : MonoBehaviour
     private GameObject m_bombSystemObject;
 
     private ExplosionPhysics m_ExpPhy;
-   /* private ExplosionPhysics m_ExpPhysic;
-    private GameObject m_ExpPhysicObject;*/
-    //Particale
     private ParticleSpawner m_ParticleSpawner ;
     private ParticleKiller m_ParticleKiller;
     private GameObject m_ParticlespawnerObject ;
@@ -71,7 +68,33 @@ public class BombScript : MonoBehaviour
             
             gameObject.transform.position = new Vector3(tempPos.x, tempPos.y + m_val, tempPos.z);
             gameObject.transform.parent = other.gameObject.transform;
-            m_Player = gameObject.transform.parent.gameObject;
+            m_Player = other.gameObject;
+            if (m_Player.GetComponent<MaterialChanger>())
+            {
+                m_Player.GetComponent<MaterialChanger>().UpdateMatToBHMat();
+            }
+            if (m_Player.GetComponent<BombPass>())
+            {
+                m_Player.GetComponent<BombPass>().SetHoldingBomb(true, gameObject);
+            }
+        }
+    }
+
+    public void SetNewBombHolder(GameObject _newHolder)
+    {
+        print("Test");
+        tempPos = _newHolder.transform.position;
+
+        gameObject.transform.position = new Vector3(tempPos.x, tempPos.y + m_val, tempPos.z);
+        gameObject.transform.parent = _newHolder.transform;
+        m_Player = _newHolder;
+        if (m_Player.GetComponent<MaterialChanger>())
+        {
+            m_Player.GetComponent<MaterialChanger>().UpdateMatToBHMat();
+        }
+        if (m_Player.GetComponent<BombPass>())
+        {
+            m_Player.GetComponent<BombPass>().SetHoldingBomb(true, gameObject);
         }
     }
 
@@ -92,11 +115,7 @@ public class BombScript : MonoBehaviour
             m_ParticleSpawner.SpawnParticle();
             //spawns in ner bomb
             m_BombSystem.SetBombSpawn(true);
-           
-
-           
-            
-            
         }
     }
+
 }
