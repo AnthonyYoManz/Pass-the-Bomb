@@ -54,6 +54,8 @@ public class BombScript : MonoBehaviour
         {
             TimeSystem();
         }
+
+        //if being held then constantly update its position
     }
 
     
