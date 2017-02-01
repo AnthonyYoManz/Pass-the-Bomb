@@ -50,6 +50,7 @@ public class Bomb_System : MonoBehaviour
     {
         print(m_SPNum);
         m_SPNum++;
+        //SetBombSpawn(true);
     }
 
 }

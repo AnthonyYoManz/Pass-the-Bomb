@@ -89,10 +89,12 @@ public class BombScript : MonoBehaviour
     public void SetNewBombHolder(GameObject _newHolder, GameObject _newPosGO)
     {
         print("Test");
-        tempPos = _newHolder.transform.position;
+        gameObject.transform.position = _newPosGO.transform.position;
+        gameObject.transform.parent = _newPosGO.transform;
 
-        gameObject.transform.position = new Vector3(tempPos.x, tempPos.y + m_val, tempPos.z);
-        gameObject.transform.parent = _newHolder.transform;
+        //tempPos = _newHolder.transform.position;
+        //gameObject.transform.position = new Vector3(tempPos.x, tempPos.y + m_val, tempPos.z);
+        //gameObject.transform.parent = _newHolder.transform;
         m_Player = _newHolder;
         if (m_Player.GetComponent<MaterialChanger>())
         {
@@ -112,6 +114,14 @@ public class BombScript : MonoBehaviour
         {
             //put the bomb location under the car before trigger 
             gameObject.transform.position = new Vector3 (m_Player.transform.position.x, m_Player.transform.position.y - m_lowerVal, m_Player.transform.position.z + m_forwardVal);
+            if (m_Player.GetComponent<Score>())
+            {
+                m_Player.GetComponent<Score>().ResetScore();
+            }
+            if (m_Player.GetComponent<BombPass>())
+            {
+                m_Player.GetComponent<BombPass>().SetHoldingBomb(false, null);
+            }
             //triggers the explosion physics
             m_ExpPhy.trigger();
            //destroys the bomb

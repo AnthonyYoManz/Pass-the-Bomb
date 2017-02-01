@@ -14,10 +14,12 @@ public class BombPass : MonoBehaviour {
     private float m_timeInterval;
     private GameObject m_playerHit;
     public GameObject m_BombPoint;
-
+    private GameObject m_playerHitBombPoint;
+    private Score m_scoreScript;
 
 	// Use this for initialization
 	void Start () {
+        m_scoreScript = gameObject.GetComponent<Score>();
         m_holdingBomb = false;
         m_timerStart = false;
         m_matChangerScript = GetComponent<MaterialChanger>();
@@ -29,7 +31,11 @@ public class BombPass : MonoBehaviour {
         {
             Timer();
         }
-	}
+        if (m_holdingBomb)
+        {
+            m_scoreScript.AddScore();
+        }
+    }
 
     void OnCollisionExit(Collision col)
     {
@@ -38,6 +44,7 @@ public class BombPass : MonoBehaviour {
             if (col.collider.tag == "Player")
             {
                 m_playerHit = col.gameObject;
+                m_playerHitBombPoint = col.gameObject.GetComponent<BombPass>().GetBombPoint();
                 m_timerStart = true;
             }
         }
@@ -50,10 +57,11 @@ public class BombPass : MonoBehaviour {
             //need to add a delay to the pass
             if (m_bomb.GetComponent<BombScript>())
             {
-                m_bomb.GetComponent<BombScript>().SetNewBombHolder(m_playerHit, m_BombPoint);
+                m_bomb.GetComponent<BombScript>().SetNewBombHolder(m_playerHit, m_playerHitBombPoint);
             }
             m_matChangerScript.UpdateMatToInitMat();
             m_playerHit = null;
+            m_playerHitBombPoint = null;
             m_bomb = null;
             m_holdingBomb = false;
             m_timer = 0;
@@ -72,5 +80,10 @@ public class BombPass : MonoBehaviour {
     {
         m_holdingBomb = _newValue;
         m_bomb = _bomb;
+    }
+
+    public GameObject GetBombPoint()
+    {
+        return m_BombPoint;
     }
 }
