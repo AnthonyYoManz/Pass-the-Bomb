@@ -6,6 +6,7 @@ public class ExplosionPhysics : MonoBehaviour
     public GameObject bombRef;
     public float radius;
     public float powerMultiplier;
+    public bool m_testing;
    
     // Use this for initialization
     void Start()
@@ -16,8 +17,11 @@ public class ExplosionPhysics : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("space"))
-        { trigger(); }
+        if (m_testing)
+        {
+            if (Input.GetKeyDown("space"))
+            { trigger(); }
+        }
     }
     public void trigger()
     {

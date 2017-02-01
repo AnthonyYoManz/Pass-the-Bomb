@@ -56,6 +56,10 @@ public class BombScript : MonoBehaviour
         }
 
         //if being held then constantly update its position
+        //if (gameObject.transform.parent != null)
+        //{
+        //    gameObject.transform.position = gameObject.transform.parent.position;
+        //}
     }
 
     
@@ -82,7 +86,7 @@ public class BombScript : MonoBehaviour
         }
     }
 
-    public void SetNewBombHolder(GameObject _newHolder)
+    public void SetNewBombHolder(GameObject _newHolder, GameObject _newPosGO)
     {
         print("Test");
         tempPos = _newHolder.transform.position;

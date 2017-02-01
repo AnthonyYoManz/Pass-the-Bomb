@@ -13,6 +13,7 @@ public class BombPass : MonoBehaviour {
     [SerializeField]
     private float m_timeInterval;
     private GameObject m_playerHit;
+    public GameObject m_BombPoint;
 
 
 	// Use this for initialization
@@ -49,7 +50,7 @@ public class BombPass : MonoBehaviour {
             //need to add a delay to the pass
             if (m_bomb.GetComponent<BombScript>())
             {
-                m_bomb.GetComponent<BombScript>().SetNewBombHolder(m_playerHit);
+                m_bomb.GetComponent<BombScript>().SetNewBombHolder(m_playerHit, m_BombPoint);
             }
             m_matChangerScript.UpdateMatToInitMat();
             m_playerHit = null;
