@@ -130,7 +130,6 @@ public class BombScript : MonoBehaviour
             //particles for explosion
             m_ParticleSpawner.SpawnParticle();
             //spawns in ner bomb
-            m_BombSystem.SetBombSpawn(true);
         }
     }
 

@@ -7,52 +7,37 @@ public class Bomb_System : MonoBehaviour
   
 
     public GameObject m_Bomb;
-    public List<GameObject> m_SpawnPoints;
-
-    public bool m_SpawnBomb = false; //
-    
-    public int m_SPNum;
-
+    public GameObject m_SpawnPoint;
+    private Transform m_NewSpawnPoint;
    
     void Start()
     {
-        m_SPNum = 0;
-        m_SpawnBomb = true;
+        GetCarSpawnPoint();
+        BombSpawn();
     }
 
     // Update is called once per frame
     void Update()
     {
-      
-        if (m_SpawnBomb)
-        {
-            
-            m_SpawnBomb = false;
-            BombSpawn();
-        }
-        if(m_SPNum >= m_SpawnPoints.Count)
-        {
-            m_SPNum = 0;
-        }
 
     }
     void BombSpawn()
     {
-        Instantiate(m_Bomb, m_SpawnPoints[m_SPNum].transform.position, Quaternion.identity);
+        Instantiate(m_Bomb, m_SpawnPoint.transform.position, Quaternion.identity);
     }
 
-    public void SetBombSpawn(bool _set)
+    void GetCarSpawnPoint()
     {
-        m_SpawnBomb = _set;
+        //Find where the cars are being spawned
+        Transform t_CarSpawnPoint;
+        t_CarSpawnPoint = m_SpawnPoint.transform;
+        SetUpSpawnPoint(t_CarSpawnPoint.transform);
     }
 
-    public void SetSpawnNum()
+    void SetUpSpawnPoint(Transform _CarSpawnPoint)
     {
-        print(m_SPNum);
-        m_SPNum++;
-        //SetBombSpawn(true);
+        m_NewSpawnPoint = _CarSpawnPoint;
     }
-
 }
 
 

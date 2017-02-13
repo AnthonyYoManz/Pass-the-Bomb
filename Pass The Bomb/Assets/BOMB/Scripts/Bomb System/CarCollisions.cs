@@ -22,7 +22,6 @@ public class CarCollisions : MonoBehaviour
         {
 
             m_TriggerOnce = false;
-            m_BombSystem.SetSpawnNum();
 
         }
 
