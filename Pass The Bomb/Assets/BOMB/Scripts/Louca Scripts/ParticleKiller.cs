@@ -1,17 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ParticleKiller : MonoBehaviour {
+namespace GCSharp
+{
+    public class ParticleKiller : MonoBehaviour
+    {
 
-    public float m_lifeTime;
+        public float m_lifeTime;
 
-	// Use this for initialization
-	void Start () {
-        Destroy(gameObject, m_lifeTime);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+        // Use this for initialization
+        void Start()
+        {
+            Destroy(gameObject, m_lifeTime);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+    }
 }
